@@ -1,0 +1,35 @@
+{
+  "capital": 100000,
+  "max_loss_per_trade": 500,
+  "daily_loss_limit": 1500,
+  "max_trades_per_day": 3,
+  "min_net_reward_risk": 1.5,
+  "position_cap_pct": 25,
+  "cash_buffer_pct": 10,
+  "intraday_leverage": 1,
+  "min_price": 20,
+  "universe": "nifty500",
+  "intraday": {
+    "or_minutes": 15,
+    "no_entries_after": "14:30",
+    "flat_by": "15:10",
+    "stop": "or-mid",
+    "target": "2R"
+  },
+  "swing": {
+    "stop": "atr:2",
+    "target": "2R",
+    "max_hold_days": 10,
+    "min_turnover_cr": 2
+  },
+  "costs": {
+    "brokerage_intraday_pct": 0.03,
+    "brokerage_intraday_cap": 20,
+    "brokerage_delivery_pct": 0,
+    "brokerage_delivery_cap": 0,
+    "dp_charge_per_sell": 15.34
+  },
+  "tick_overrides": {},
+  "extra_holidays": {},
+  "special_sessions": {}
+}

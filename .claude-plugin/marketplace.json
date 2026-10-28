@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "trader-skill",
+  "description": "India Trader: suggestion-only trading skills for NSE stocks",
+  "owner": {
+    "name": "Prateek Kammakolu"
+  },
+  "plugins": [
+    {
+      "name": "trader-skill",
+      "description": "Nine Claude skills for Indian stocks: a NIFTY 500 scanner (intraday and swing), news with BSE filings, an entry timer, an exit planner on NSE ticks, a time machine scored after Indian charges, sizing with rule checks, alerts with the NSE calendar, a journal that keeps score, and a one-card suggestion. Never places orders.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Pr-teek/trader-skill"
+    }
+  ]
+}

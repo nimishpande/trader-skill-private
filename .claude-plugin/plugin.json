@@ -1,0 +1,13 @@
+{
+  "name": "trader-skill",
+  "description": "India Trader: Claude skills for NSE stocks. Scan NIFTY 500 for intraday and swing setups, read news and BSE filings, time entries, plan exits on NSE ticks, replay the odds after Indian charges, size positions, set alerts and keep score. Suggestions only: it never places an order.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Prateek Kammakolu"
+  },
+  "homepage": "https://github.com/Pr-teek/trader-skill",
+  "repository": "https://github.com/Pr-teek/trader-skill",
+  "license": "MIT",
+  "keywords": ["claude-skills", "nse", "india", "stock-market", "intraday", "swing-trading", "backtesting"],
+  "skills": "./.claude/skills/"
+}

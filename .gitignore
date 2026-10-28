@@ -1,0 +1,10 @@
+# Working files the skills rewrite on every run
+trader/*
+# ...but keep your settings and your track record, so a fresh cloud session has them.
+# If this repo is PUBLIC, delete these two lines: your journal shows your trades.
+!trader/config.json
+!trader/journal.json
+
+__pycache__/
+*.pyc
+*.tmp
