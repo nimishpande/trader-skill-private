@@ -175,6 +175,18 @@ class TestBudget(SkillCase):
         rc, out = self.run_skill("budget", "--max-loss", "3", now="2026-10-21 10:06")
         self.assertEqual(self.read("sizing.json")["suggestion"], "skip")
         self.assertIn("even 1 share", out)
+        self.assertIn("over your max loss", out)
+
+    def test_zero_share_names_position_cap(self):
+        # capital so small that even 1 share exceeds the 25% position cap
+        self.chain()
+        p = self.read("plan.json")
+        # need capital where floor(capital*0.25 / entry) == 0, i.e. capital < entry*4
+        tiny_capital = int(p["entry"] * 3)
+        rc, out = self.run_skill("budget", "--capital", str(tiny_capital), now="2026-10-21 10:06")
+        self.assertEqual(self.read("sizing.json")["suggestion"], "skip")
+        self.assertIn("position cap", out)
+        self.assertIn("even 1 share costs", out)
 
     def test_checks_use_odds_news_and_window(self):
         self.chain()

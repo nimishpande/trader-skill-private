@@ -30,6 +30,21 @@ class TestUniverse(SkillCase):
         self.assertEqual(rc, 1)
         self.assertIn("no Symbol column", out)
 
+    def test_drops_placeholder_rows(self):
+        saved = os.path.join(self.tmp, "nifty500.csv")
+        with open(saved, "w") as fh:
+            fh.write("Company Name,Industry,Symbol,Series,ISIN Code\n"
+                     "Demo Breakout Ltd,Capital Goods,DEMOBRK,EQ,INE0DEMO1011\n"
+                     "Dummy Demo Ltd,Capital Goods,DUMMYDEMO,EQ,DUM0DEMO1011\n"
+                     "Demo REIT,Realty,DEMOREIT,RR,INE0DEMO2011\n")
+        rc, out = self.run_skill("scan", "universe", "--file", saved, offline=False)
+        self.assertEqual(rc, 0, out)
+        with open(os.path.join(self.tdir, "universe.csv"), encoding="utf-8") as fh:
+            rows = list(csv.DictReader(fh))
+        self.assertEqual([r["symbol"] for r in rows], ["DEMOBRK"])
+        self.assertIn("placeholder rows (not real stocks): DUMMYDEMO", out)
+        self.assertIn("RR 1", out)
+
 
 class TestSwingScan(SkillCase):
     def test_hits(self):

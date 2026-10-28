@@ -52,7 +52,7 @@ def parse_list(text):
     }
     if ci["symbol"] is None:
         raise m.MarketError("the NSE list has no Symbol column (got %s)" % ", ".join(h[:6]))
-    out, skipped = [], {}
+    out, skipped, dummies = [], {}, []
     for r in rows[1:]:
         def g(k):
             i = ci[k]
@@ -61,9 +61,14 @@ def parse_list(text):
         if series not in KEEP_SERIES:
             skipped[series] = skipped.get(series, 0) + 1
             continue
-        out.append({"symbol": g("symbol").upper(), "name": g("name"), "series": series,
+        sym, isin = g("symbol").upper(), g("isin").upper()
+        # NSE parks a placeholder row (DUMMYHEG, ISIN DUM...) in index lists during a demerger
+        if sym.startswith("DUMMY") or (isin and not isin.startswith("IN")):
+            dummies.append(sym)
+            continue
+        out.append({"symbol": sym, "name": g("name"), "series": series,
                     "isin": g("isin"), "industry": g("industry")})
-    return out, skipped
+    return out, skipped, dummies
 
 
 def write_universe(path, rows):
@@ -99,7 +104,7 @@ def cmd_universe(a):
                           "and run: scan.py universe --file <saved csv>" % (a.index, e, m.NSE_INDEX_CSV[a.index]))
         origin = m.NSE_INDEX_CSV[a.index]
     try:
-        rows, skipped = parse_list(text)
+        rows, skipped, dummies = parse_list(text)
     except m.MarketError as e:
         return m.fail(str(e))
     path = m.tpath("universe.csv", a.trader_dir)
@@ -109,6 +114,8 @@ def cmd_universe(a):
     msg += " (%d trade-to-trade BE: delivery only, never intraday)" % t2t if t2t else ""
     if skipped:
         msg += ". Left out other series: " + ", ".join("%s %d" % kv for kv in sorted(skipped.items()))
+    if dummies:
+        msg += ". Left out NSE placeholder rows (not real stocks): " + ", ".join(dummies)
     sys.stdout.write(msg + ".\n")
     return 0
 

@@ -152,9 +152,21 @@ def build(a):
            "entry": plan["entry"], "stop": plan["stop"], "target": plan["target"],
            "capital": capital, "max_loss": max_loss, "qty": q, "decided_by": decided}
     if q <= 0:
-        one = loss_at_stop(1, plan, cfg["costs"])[0]
-        doc.update({"checks": [{"level": "SKIP", "text": "even 1 share loses %s at the stop (costs included), over your max loss %s"
-                                % (m.inr(one), m.inr(max_loss))}], "suggestion": "skip"})
+        lev = cfg["intraday_leverage"] if plan["mode"] == "intraday" else 1.0
+        pos_cap_rupees = capital * cfg["position_cap_pct"] / 100.0 * lev
+        buf_rupees = capital * (1 - cfg["cash_buffer_pct"] / 100.0) * lev
+        entry = plan["entry"]
+        if int(pos_cap_rupees // entry) == 0:
+            text = ("even 1 share costs %s, over your position cap (%g%% of %s = %s)"
+                    % (m.inr(entry), cfg["position_cap_pct"], m.inr(capital, 0), m.inr(pos_cap_rupees)))
+        elif int(buf_rupees // entry) == 0:
+            text = ("even 1 share costs %s, over your cash limit (%s deployable after %g%% buffer)"
+                    % (m.inr(entry), m.inr(buf_rupees), cfg["cash_buffer_pct"]))
+        else:
+            one = loss_at_stop(1, plan, cfg["costs"])[0]
+            text = ("even 1 share loses %s at the stop (costs included), over your max loss %s"
+                    % (m.inr(one), m.inr(max_loss)))
+        doc.update({"checks": [{"level": "SKIP", "text": text}], "suggestion": "skip"})
         return doc
     loss, c_stop = loss_at_stop(q, plan, cfg["costs"])
     gain, c_tgt = gain_at_target(q, plan, cfg["costs"])
